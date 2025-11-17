@@ -49,8 +49,8 @@ if __name__ == "__main__":
     parser.add_argument(
         '--model',
         type=str,
-        default='gemini-2.0-flash-exp',
-        help='Gemini model to use (default: gemini-2.0-flash-exp)'
+        default='gemini-2.5-flash',
+        help='Gemini model to use (default: gemini-2.5-flash)'
     )
 
     parser.add_argument('--toc-check-pages', type=int, default=20,

@@ -33,18 +33,18 @@ CHATGPT_API_KEY = os.getenv("CHATGPT_API_KEY")  # Keep for compatibility
 # Gemini REST API endpoint (use v1 instead of v1beta for better compatibility)
 GEMINI_API_BASE = "https://generativelanguage.googleapis.com/v1/models"
 
-# Model mapping (use stable gemini-1.5-flash for better compatibility)
+# Model mapping (use gemini-2.5-flash - latest stable model)
 GEMINI_MODEL_MAP = {
-    "gpt-4o": "gemini-1.5-flash",
-    "gpt-4o-2024-11-20": "gemini-1.5-flash",
-    "gpt-4o-mini": "gemini-1.5-flash",
-    "gpt-4": "gemini-1.5-flash",
-    "gpt-3.5-turbo": "gemini-1.5-flash",
+    "gpt-4o": "gemini-2.5-flash",
+    "gpt-4o-2024-11-20": "gemini-2.5-flash",
+    "gpt-4o-mini": "gemini-2.5-flash",
+    "gpt-4": "gemini-2.5-flash",
+    "gpt-3.5-turbo": "gemini-2.5-flash",
 }
 
 def get_gemini_model_name(openai_model):
     """Convert OpenAI model name to Gemini model name"""
-    return GEMINI_MODEL_MAP.get(openai_model, "gemini-1.5-flash")
+    return GEMINI_MODEL_MAP.get(openai_model, "gemini-2.5-flash")
 
 def count_tokens(text, model=None):
     """
