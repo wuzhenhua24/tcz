@@ -13,14 +13,21 @@ import sys
 # pageindex.page_index is imported, because page_index.py does 'from .utils import *'
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-# Import the Gemini REST API adapter
+# STEP 1: Remove any cached pageindex modules to ensure clean import
+# This is necessary if pageindex was previously imported
+modules_to_remove = [key for key in sys.modules.keys() if key.startswith('pageindex')]
+for module in modules_to_remove:
+    del sys.modules[module]
+
+# STEP 2: Import the Gemini REST API adapter
 from pageindex import utils_gemini_rest as utils_replacement
 
-# Inject the replacement utils into sys.modules so that when page_index.py
-# does 'from .utils import *', it imports from our Gemini adapter instead
+# STEP 3: Inject the replacement utils into sys.modules BEFORE importing page_index
+# This ensures that when page_index.py executes 'from .utils import *',
+# it imports from our Gemini adapter instead of the original utils
 sys.modules['pageindex.utils'] = utils_replacement
 
-# Now import the functions - they will automatically use the Gemini adapter
+# STEP 4: Now import the functions - they will automatically use the Gemini adapter
 from pageindex.page_index import page_index_main
 from pageindex.page_index_md import md_to_tree
 
