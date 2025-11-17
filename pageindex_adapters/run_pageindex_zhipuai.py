@@ -105,17 +105,20 @@ if __name__ == "__main__":
         print("=" * 70)
 
         # Process PDF with ZhipuAI
-        result = page_index_main(
-            pdf_path=args.pdf_path,
+        # Create opt configuration object (SimpleNamespace to allow dot notation)
+        from types import SimpleNamespace
+        opt = SimpleNamespace(
             model=args.model,
-            toc_check_pages=args.toc_check_pages,
-            max_pages_per_node=args.max_pages_per_node,
-            max_tokens_per_node=args.max_tokens_per_node,
+            toc_check_page_num=args.toc_check_pages,
+            max_page_num_each_node=args.max_pages_per_node,
+            max_token_num_each_node=args.max_tokens_per_node,
             if_add_node_id=args.if_add_node_id,
             if_add_node_summary=args.if_add_node_summary,
             if_add_doc_description=args.if_add_doc_description,
             if_add_node_text=args.if_add_node_text
         )
+
+        result = page_index_main(args.pdf_path, opt)
 
         # Save result
         os.makedirs('results', exist_ok=True)
