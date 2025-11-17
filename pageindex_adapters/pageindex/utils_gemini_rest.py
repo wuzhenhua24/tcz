@@ -3,7 +3,12 @@ Gemini REST API adapter for PageIndex
 This module uses REST API instead of grpc to avoid SSL certificate issues
 """
 
-import tiktoken
+try:
+    import tiktoken
+    HAS_TIKTOKEN = True
+except ImportError:
+    HAS_TIKTOKEN = False
+
 import logging
 import os
 from datetime import datetime
@@ -48,11 +53,15 @@ def count_tokens(text, model=None):
     """
     if not text:
         return 0
-    try:
-        enc = tiktoken.get_encoding("cl100k_base")
-        tokens = enc.encode(text)
-        return len(tokens)
-    except Exception as e:
+    if HAS_TIKTOKEN:
+        try:
+            enc = tiktoken.get_encoding("cl100k_base")
+            tokens = enc.encode(text)
+            return len(tokens)
+        except Exception as e:
+            # Fallback: rough estimation
+            return len(text) // 4
+    else:
         # Fallback: rough estimation
         return len(text) // 4
 
@@ -377,14 +386,13 @@ def convert_page_to_int(data):
 
 def get_page_tokens(pdf_path, model="gpt-4o-2024-11-20", pdf_parser="PyPDF2"):
     """Extract text and count tokens for each PDF page"""
-    enc = tiktoken.get_encoding("cl100k_base")
     if pdf_parser == "PyPDF2":
         pdf_reader = PyPDF2.PdfReader(pdf_path)
         page_list = []
         for page_num in range(len(pdf_reader.pages)):
             page = pdf_reader.pages[page_num]
             page_text = page.extract_text()
-            token_length = len(enc.encode(page_text))
+            token_length = count_tokens(page_text, model)
             page_list.append((page_text, token_length))
         return page_list
     elif pdf_parser == "PyMuPDF":
@@ -396,7 +404,7 @@ def get_page_tokens(pdf_path, model="gpt-4o-2024-11-20", pdf_parser="PyPDF2"):
         page_list = []
         for page in doc:
             page_text = page.get_text()
-            token_length = len(enc.encode(page_text))
+            token_length = count_tokens(page_text, model)
             page_list.append((page_text, token_length))
         return page_list
     else:
