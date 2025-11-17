@@ -160,7 +160,7 @@ cd ~/pageindex-test/PageIndex
 # 根据你选择的LLM创建.env文件
 cat > .env << 'EOF'
 # 智谱AI (选择这个如果用智谱AI)
-ZHIPUAI_API_KEY=REDACTED_ZHIPU_KEY
+ZHIPUAI_API_KEY=你的智谱AI-key
 
 # Gemini (选择这个如果用Gemini)
 # GEMINI_API_KEY=你的Gemini-API-key
@@ -174,7 +174,7 @@ EOF
 
 ```bash
 # 智谱AI
-export ZHIPUAI_API_KEY="REDACTED_ZHIPU_KEY"
+export ZHIPUAI_API_KEY="你的智谱AI-key"
 
 # 或Gemini
 # export GEMINI_API_KEY="你的key"

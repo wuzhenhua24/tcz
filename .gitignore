@@ -1,0 +1,41 @@
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# API keys and credentials
+*.key
+*.secret
+*_secret.txt
+credentials.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build and distribution
+dist/
+build/
+*.egg-info/
+
+# Test coverage
+.coverage
+htmlcov/
