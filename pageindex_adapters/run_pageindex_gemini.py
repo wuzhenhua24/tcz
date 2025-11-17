@@ -11,16 +11,23 @@ import sys
 # Monkey patch to use Gemini utils (REST API version)
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-# Import and replace utils with Gemini REST version
+# Import the Gemini REST API adapter
 from pageindex import utils_gemini_rest as utils_replacement
+
+# Import the modules BEFORE importing functions
 import pageindex.page_index as page_index_module
 import pageindex.page_index_md as page_index_md_module
 
-# Replace utils in both modules
-page_index_module.utils = utils_replacement
-page_index_md_module.utils = utils_replacement
+# Replace all the utils functions that page_index.py uses (it does 'from .utils import *')
+# We need to replace the function references directly in the module
+for attr_name in dir(utils_replacement):
+    if not attr_name.startswith('_'):  # Only replace public attributes
+        attr = getattr(utils_replacement, attr_name)
+        if callable(attr) or isinstance(attr, type):  # Replace functions and classes
+            setattr(page_index_module, attr_name, attr)
+            setattr(page_index_md_module, attr_name, attr)
 
-# Now import the functions
+# Now import the functions (they will use the replaced utils functions)
 from pageindex.page_index import page_index_main
 from pageindex.page_index_md import md_to_tree
 
