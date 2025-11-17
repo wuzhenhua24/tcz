@@ -4,6 +4,7 @@ Modified version to use Google Gemini API instead of OpenAI
 """
 
 import argparse
+import importlib
 import os
 import json
 import sys
@@ -19,15 +20,21 @@ modules_to_remove = [key for key in sys.modules.keys() if key.startswith('pagein
 for module in modules_to_remove:
     del sys.modules[module]
 
-# STEP 2: Import the Gemini REST API adapter
+# STEP 2: Import the Gemini REST API adapter (this will also import the package)
 from pageindex import utils_gemini_rest as utils_replacement
 
-# STEP 3: Inject the replacement utils into sys.modules BEFORE importing page_index
-# This ensures that when page_index.py executes 'from .utils import *',
-# it imports from our Gemini adapter instead of the original utils
+# STEP 3: Inject the replacement utils into sys.modules BEFORE reloading page_index
 sys.modules['pageindex.utils'] = utils_replacement
 
-# STEP 4: Now import the functions - they will automatically use the Gemini adapter
+# STEP 4: Reload page_index/page_index_md so that their wildcard imports
+# pick up the replacement utils module
+page_index_module = importlib.import_module('pageindex.page_index')
+page_index_md_module = importlib.import_module('pageindex.page_index_md')
+
+importlib.reload(page_index_module)
+importlib.reload(page_index_md_module)
+
+# STEP 5: Now import the functions - they will automatically use the Gemini adapter
 from pageindex.page_index import page_index_main
 from pageindex.page_index_md import md_to_tree
 
@@ -42,8 +49,8 @@ if __name__ == "__main__":
     parser.add_argument(
         '--model',
         type=str,
-        default='gemini-2.0-flash-exp',
-        help='Gemini model to use (default: gemini-2.0-flash-exp)'
+        default='gemini-2.5-flash',
+        help='Gemini model to use (default: gemini-2.5-flash)'
     )
 
     parser.add_argument('--toc-check-pages', type=int, default=20,
